@@ -1,0 +1,28 @@
+{
+	"schemaVersion": 2,
+	"type": "single-sprite-square-textured",
+	"texture": "skybox:stars.png",
+	"blend": {"type": "add"},
+	"properties": {
+		"priority": 1,
+		"fade": {
+			"startFadeIn": 13333,
+			"endFadeIn": 13666,
+			"startFadeOut": 22333,
+			"endFadeOut": 22666
+			},
+		"rotation": {
+			"skyboxRotation": false,
+			"rotationSpeedZ": 1.0
+			}
+		},
+	"conditions": {
+		"worlds": ["minecraft:overworld"],
+		"weather": ["clear"]
+		},
+	"decorations": {
+		"showStars": false,
+		"showMoon": false,
+    	"showSun": false
+	}
+}

@@ -1,0 +1,28 @@
+{
+	"schemaVersion": 2,
+	"type": "single-sprite-square-textured",
+	"texture": "skybox:sunflare.png",
+	"blend": {"type": "screen"},
+	"properties": {
+		"priority": 7,
+		"fade": {
+			"startFadeIn": 22333,
+			"endFadeIn": 22666,
+			"startFadeOut": 23666,
+			"endFadeOut": 333
+			},
+		"rotation": {
+			"skyboxRotation": false,
+			"rotationSpeedZ": 1.0
+			}
+		},
+	"conditions": {
+		"worlds": ["minecraft:overworld"],
+		"weather": ["clear"]
+		},
+	"decorations": {
+		"showStars": false,
+		"showMoon": false,
+    	"showSun": false
+	}
+}

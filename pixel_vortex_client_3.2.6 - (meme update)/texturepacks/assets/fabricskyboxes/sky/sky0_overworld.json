@@ -1,0 +1,17 @@
+{
+	"schemaVersion": 2,
+	"type": "overworld",
+	"properties": {
+		"priority": 0,
+		"fade": {"alwaysOn": true}
+		},
+	"conditions": {
+		"worlds": ["minecraft:overworld"],
+		"weather": ["clear", "rain", "thunder", "snow"]
+		},
+	"decorations": {
+		"showSun": false,
+		"showMoon": false,
+		"showStars": false
+		}
+}

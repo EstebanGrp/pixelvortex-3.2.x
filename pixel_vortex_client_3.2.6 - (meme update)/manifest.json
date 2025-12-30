@@ -1,0 +1,22 @@
+{
+  "name": "Miniblox",
+  "short_name": "Miniblox",
+  "start_url": "/index.html",
+  "display": "fullscreen",
+  "orientation": "landscape",
+  "icons": [
+    {
+      "src": "pwa-icon-512.png",
+      "type": "image/png",
+      "sizes": "512x512"
+    },
+    {
+      "src": "pwa-icon-192.png",
+      "type": "image/png",
+      "sizes": "192x192"
+    }
+  ],
+  "theme_color": "#000000",
+  "background_color": "#ffffff",
+  "description": "Miniblox is a simple and fun voxel game for all ages."
+}

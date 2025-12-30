@@ -1,0 +1,21 @@
+{
+	"texture": "minecraft:textures/environment/moon_phases.png",
+	"display": {
+		"scale": "18",
+		"distance": "100"
+	},
+	"rotation": {
+		"degrees_x": "0",
+		"degrees_y": "0",
+		"degrees_z": "skyAngle+180",
+		"base_degrees_x": "0",
+		"base_degrees_y": "0",
+		"base_degrees_z": "0"
+	},
+	"properties": {
+		"has_moon_phases": true,
+		"is_solid": false,
+		"blend": true,
+		"alpha": "(1-rainAlpha)"
+	}
+}

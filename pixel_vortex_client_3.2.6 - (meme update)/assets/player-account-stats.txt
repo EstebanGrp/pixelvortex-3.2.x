@@ -1,0 +1,39 @@
+assets/index-CANiDFbI.js:166285 GameProfile fields: username, uuid, metricsId, verified, cosmetics, rank, effects, vanished, level, ip, fake, prevUsername
+assets/index-CANiDFbI.js:166300 GameProfile init: rank, cosmetics.skin, cosmetics.color, cosmetics.cape, cosmetics.hat, cosmetics.pet, level, effects.trail, effects.aura
+assets/index-CANiDFbI.js:166318 GameProfile.copy: username, uuid, verified, cosmetics, rank, effects
+
+assets/index-CANiDFbI.js:166339 ClientGameProfile fields: xp, totalXpToNextLevel, neededXpToNextLevel, hasPassword, email, lootchests, coins, loginBonusLastClaim, loginBonusClaimStreak, inboundFriendRequestCount
+assets/index-CANiDFbI.js:166353 ClientGameProfile init mapping: total_xp, total_xp_to_next_level, needed_xp_to_next_level, hasPassword, email, lootchests, coins, inboundFriendRequestCount, loginBonusLastClaim, loginBonusClaimStreak
+
+assets/index-CANiDFbI.js:120935 EntityPlayer constructor assigns this.profile
+assets/index-CANiDFbI.js:120958 isAdmin() uses profile.rank and operator
+assets/index-CANiDFbI.js:121581 getDisplayName() returns profile.username
+assets/index-CANiDFbI.js:121585 onTeamChanged() sets profile.cosmetics.color and applies team.prefix to name
+assets/index-CANiDFbI.js:121433 playSound() checks profile.vanished for client-side handling
+assets/index-CANiDFbI.js:161334 Effects update uses player.profile.effects.aura/trail
+
+assets/index-CANiDFbI.js:166281 Rewards may be type "coins"
+assets/index-CANiDFbI.js:166347 ClientGameProfile coins field
+assets/index-CANiDFbI.js:166359 ClientGameProfile coins set from server
+
+assets/index-CANiDFbI.js:191815 GameInfo class
+assets/index-CANiDFbI.js:191832 GameInfo.health
+assets/index-CANiDFbI.js:191833 GameInfo.maxHealth
+assets/index-CANiDFbI.js:191834 GameInfo.absorption
+assets/index-CANiDFbI.js:191835 GameInfo.oxygen
+assets/index-CANiDFbI.js:191836 GameInfo.food
+assets/index-CANiDFbI.js:191837 GameInfo.armor
+assets/index-CANiDFbI.js:191838 GameInfo.gamemode
+assets/index-CANiDFbI.js:191840 GameInfo.xp.experience
+assets/index-CANiDFbI.js:191842 GameInfo.xp.experienceLevel
+assets/index-CANiDFbI.js:191843 GameInfo.xp.experienceTotal
+assets/index-CANiDFbI.js:191845 GameInfo.inventoryItems
+assets/index-CANiDFbI.js:191847 GameInfo.selectedSlot
+assets/index-CANiDFbI.js:191852 GameInfo.scoreboard
+assets/index-CANiDFbI.js:245414 GameContext creation
+
+assets/index-CANiDFbI.js:210075 LoginBonusModal uses AccountContext.profile and canClaimLoginBonus
+assets/index-CANiDFbI.js:210706 FreeCoins uses AccountContext.profile and updateProfile
+assets/index-CANiDFbI.js:210755 QuickLaunchButton uses AccountContext.profile with getRankLevel
+assets/index-CANiDFbI.js:211549 TitleNav uses AccountContext.profile
+

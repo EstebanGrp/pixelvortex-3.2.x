@@ -1,0 +1,18 @@
+{
+	"schemaVersion": 2,
+	"type": "monocolor",
+	"blend": {"type": "add"},
+	"properties": {
+		"priority": 8,
+		"fade": {"alwaysOn": true}
+		},
+	"conditions": {
+		"worlds": ["minecraft:overworld"],
+		"weather": ["clear"]
+	},
+	"decorations": {
+		"showStars": false,
+		"showSun": true,
+		"showMoon": true
+	}
+}

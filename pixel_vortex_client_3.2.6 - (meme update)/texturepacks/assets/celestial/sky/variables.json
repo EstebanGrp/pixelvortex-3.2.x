@@ -1,0 +1,20 @@
+{
+	"variables": [
+		{
+			"name": "sunset_fade",
+			"value": "(ifElse((dayTime > 10500) & (dayTime < 11501), 0.001 * (dayTime - 10500), ifElse((dayTime > 11500) & (dayTime < 12501), 1, ifElse((dayTime > 12500) & (dayTime < 13500), -0.001 * (dayTime - 13500), 0))))"
+		},
+		{
+			"name": "sunrise_fade",
+			"value": "(ifElse((dayTime > 500) & (dayTime < 1501), -0.001 * (dayTime - 1500), ifElse((dayTime > 1500) & (dayTime < 22501), 0, ifElse((dayTime > 22500) & (dayTime < 23500), 0.001 * (dayTime - 22500), 1))))"
+		},
+		{
+			"name": "night_fade",
+			"value": "(ifElse((dayTime > 12500) & (dayTime < 13501), 0.001 * (dayTime - 12500), ifElse((dayTime > 13500) & (dayTime < 22501), 1, ifElse((dayTime > 22500) & (dayTime < 23500), -0.001 * (dayTime - 23500), 0))))"
+		},
+		{
+			"name": "day_fade",
+			"value": "(ifElse((dayTime > 500) & (dayTime < 1501), 0.001 * (dayTime - 500), ifElse((dayTime > 1500) & (dayTime < 10501), 1, ifElse((dayTime > 10500) & (dayTime < 11500), -0.001 * (dayTime - 11500), 0))))"
+		}
+	]
+}

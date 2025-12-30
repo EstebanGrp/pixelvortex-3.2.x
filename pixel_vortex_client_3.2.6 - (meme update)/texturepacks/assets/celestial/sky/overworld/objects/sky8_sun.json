@@ -1,0 +1,20 @@
+{
+	"texture": "minecraft:textures/environment/sun.png",
+	"display": {
+		"scale": "40",
+		"distance": "100"
+	},
+	"rotation": {
+		"degrees_x": "0",
+		"degrees_y": "0",
+		"degrees_z": "skyAngle",
+		"base_degrees_x": "0",
+		"base_degrees_y": "0",
+		"base_degrees_z": "0"
+	},
+	"properties": {
+		"is_solid": false,
+		"blend": true,
+		"alpha": "(1-rainAlpha)"
+	}
+}
