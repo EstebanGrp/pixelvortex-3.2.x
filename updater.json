@@ -9,32 +9,16 @@
   },
 
   "changes": {
-    "modified_files": [
-      {
-        "file": "-",
-        "path": "index.html",
-        "type": "file"
-      },
-      {
-        "file": "-",
-        "path": "js/main.js",
-        "type": "file"
-      }
-    ],
+    "modified_files": [],
 
     "new_files": [
       {
         "file": "-",
-        "path": "assets/textures/",
-        "type": "directory"
+        "path": "pixel_vortex_client_3.2.6 - (meme update)/memes/WEBP/mono-asombrado.webp",
+        "type": "file"
       }
     ],
 
-    "deleted_files": [
-      {
-        "file": "-",
-        "path": "old_versions/"
-      }
-    ]
+    "deleted_files": []
   }
 }
