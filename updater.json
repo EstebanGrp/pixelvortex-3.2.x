@@ -1,25 +1,39 @@
 {
-  "version": "3.2.x",
+  "version": "3.2.6",
+  "version_code": 326,
   "build": "2026-01-01",
+
+  "update": {
+    "required": true,
+    "min_launcher_version": "1.0.0"
+  },
+
   "changes": {
     "modified_files": [
       {
         "file": "-",
-        "type": "-"
+        "path": "index.html",
+        "type": "file"
       },
       {
         "file": "-",
-        "type": "-"
+        "path": "js/main.js",
+        "type": "file"
       }
     ],
+
     "new_files": [
       {
-        "file": "assets/textures/-.png",
-        "type": "-"
-      },
+        "file": "-",
+        "path": "assets/textures/",
+        "type": "directory"
+      }
+    ],
+
+    "deleted_files": [
       {
-        "file": "scripts/-.js",
-        "type": "-"
+        "file": "-",
+        "path": "old_versions/"
       }
     ]
   }
