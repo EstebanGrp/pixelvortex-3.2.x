@@ -157869,6 +157869,7 @@ I(_n, "crosshairSize", new SliderOption("Crosshair Size",16,128,48,1,!1)),
 I(_n, "itemPhysics", new Option("Item Physics",!1)),
 I(_n, "proximityAlert", new Option("Proximity Alert",!0)),
 I(_n, "cameraOverhaul", new Option("Camera Overhaul",!1)),
+I(_n, "fpsUnlocker", new Option("FPS Unlocker (Test)",!1)),
 I(_n, "textureMaterial", new SelectOption$1("Material Texture",["Basic", "Lambert", "Phong", "Standard", "Toon"],"Lambert")),
 I(_n, "skyPreset", new SelectOption$1("Sky Preset",["Off","Imgur Sky","iili Sky 1","iili Sky 2","iili Sky 3"],"Off")),
 I(_n, "shaderPack", new SelectOption$1("Shader Pack",["Off", "Blue-Shaders", "CrapDeShoes Mini Shader v1", "MakeUp-UltraFast-9.3e"],"Off")),
@@ -165978,7 +165979,7 @@ class TileEntityRenderer {
 class Hud3DScene {
     constructor() {
         I(this, "fireMesh");
-        I(this, "camera", new PerspectiveCamera(75,window.innerWidth / window.innerHeight,.01,1e7));
+        I(this, "camera", new PerspectiveCamera(75,window.innerWidth / window.innerHeight,.01,5000));
         I(this, "scene", new Scene);
         this.scene.add(this.camera);
         const u = new AmbientLight(16777215,3);
@@ -182949,6 +182950,7 @@ class MasterRenderer {
         Options$1.shaderShadows.onChange(v => this.renderer.shadowMap.enabled = v),
         Options$1.resolution.onChange( () => this.updateResolution()),
         this.updateResolution(),
+        this.renderer.shadowMap.enabled = !1,
         this.renderer.autoClear = !1,
         this.renderer.info.autoReset = !1,
         this.renderer.outputColorSpace = LinearSRGBColorSpace,
@@ -182986,6 +182988,7 @@ class MasterRenderer {
         this.colorPass.renderToScreen = !0,
         this.colorPass.enabled = !1,
         Options$1.shaderPack && Options$1.shaderPack.onChange(x => this.applyShaderPack(x)),
+        this.applyShaderPack("Off"),
         document.getElementById("canvas-holder").appendChild(this.renderer.domElement)
     }
     static async applyShaderPack(name) {
@@ -206959,7 +206962,7 @@ class Fog {
 }
 const Sp = class Sp {
     constructor(u) {
-        I(this, "camera", new PerspectiveCamera(85,window.innerWidth / window.innerHeight,.01,1e7));
+        I(this, "camera", new PerspectiveCamera(85,window.innerWidth / window.innerHeight,.01,5000));
         I(this, "scene", new Scene);
         I(this, "axesHelper", new AxesHelper(.01));
         I(this, "entityMeshes", new Group);
@@ -225895,6 +225898,8 @@ jsxRuntimeExports.jsxs(OptionsWrapper, {
         unit: "x",
         transform: m => m / 100,
         option: Options$1.resolution
+    }), jsxRuntimeExports.jsx(ToggleButton, {
+        option: Options$1.fpsUnlocker
     }), jsxRuntimeExports.jsx(ToggleButton, {
         option: Options$1.fastRender
     }), jsxRuntimeExports.jsx(ToggleButton, {
@@ -246027,6 +246032,32 @@ const Ti = class Ti {
             this.gameScene.update(),
             MasterRenderer.render(),
             this.resourceMonitor.renderTime = performance.now() - g;
+            if (document.hidden) return;
+            this._lastFrameStart = this._lastFrameStart || u;
+            this._targetFps = this._targetFps || 60;
+            if (!Options$1.fpsUnlocker.value) {
+                const __minInterval = 1000 / this._targetFps;
+                if (u - this._lastFrameStart < __minInterval) return;
+            }
+            this._lastFrameStart = u;
+            this._perf = this._perf || {inc:0,dec:0};
+            if (this.resourceMonitor.renderTime > 20) {
+                this._perf.dec++;
+                this._perf.inc = 0;
+                if (this._perf.dec >= 3) {
+                    Options$1.resolution && (Options$1.resolution.value = Math.max(50, Options$1.resolution.value - 10));
+                    MasterRenderer.updateResolution();
+                    this._perf.dec = 0;
+                }
+            } else if (this.resourceMonitor.renderTime < 12) {
+                this._perf.inc++;
+                this._perf.dec = 0;
+                if (this._perf.inc >= 6) {
+                    Options$1.resolution && (Options$1.resolution.value = Math.min(100, Options$1.resolution.value + 5));
+                    MasterRenderer.updateResolution();
+                    this._perf.inc = 0;
+                }
+            }
             const y = performance.now();
             gui.update(),
             this.resourceMonitor.canvasTime = performance.now() - y,
@@ -250122,5 +250153,4 @@ document.addEventListener("DOMContentLoaded", startGame, !1);
             document.body.querySelectorAll('*').forEach(checkAndInject);
         }
     }, 2000);
-
 })();
