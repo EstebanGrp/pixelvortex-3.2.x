@@ -1,16 +1,13 @@
 {
-  "version": "3.2.7",
-  "version_code": 327,
+  "version": "3.2.6",
+  "version_code": 326,
   "build": "2026-01-01",
-
   "update": {
     "required": true,
     "min_launcher_version": "1.0.0"
   },
-
   "changes": {
     "modified_files": [],
-
     "new_files": [
       {
         "file": "-",
@@ -18,7 +15,6 @@
         "type": "file"
       }
     ],
-
     "deleted_files": []
   }
 }
