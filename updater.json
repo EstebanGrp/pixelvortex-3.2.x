@@ -1,24 +1,20 @@
 {
-  "version": "3.2.14",
-  "version_code": 3214,
+  "version": "3.2.15",
+  "version_code": 3215,
   "build": "2026-01-01",
-
   "update": {
     "required": true,
-    "min_launcher_version": "1.0.0"
+    "min_launcher_version": "5.3.9"
   },
-
   "changes": {
-    "modified_files": [],
-
-    "new_files": [
+    "modified_files": [
       {
-        "file": "-",
-        "path": "pixel_vortex_client_3.2.6 - (meme update)/memes/WEBP/mono-asombrado.webp",
+        "file": "index-CANiDFbI.js",
+        "path": "C:/Users/etc}/Desktop/pixel_vortex_client_3.2.6 - (meme update)/assets/index-CANiDFbI.js",
         "type": "file"
       }
     ],
-
+    "new_files": [],
     "deleted_files": []
   }
 }
