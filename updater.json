@@ -1,16 +1,18 @@
 {
-  "version": "3.2.15",
-  "version_code": 3215,
+  "version": "3.2.16",
+  "version_code": 3216,
   "build": "2026-01-01",
+
   "update": {
     "required": true,
     "min_launcher_version": "5.3.9"
   },
+
   "changes": {
     "modified_files": [
       {
         "file": "index-CANiDFbI.js",
-        "path": "C:/Users/etc}/Desktop/pixel_vortex_client_3.2.6 - (meme update)/assets/index-CANiDFbI.js",
+        "path": "assets/index-CANiDFbI.js",
         "type": "file"
       }
     ],
