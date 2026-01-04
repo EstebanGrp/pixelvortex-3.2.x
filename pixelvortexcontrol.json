@@ -1,0 +1,181 @@
+{
+  "meta": {
+    "project": "Pixel Vortex",
+    "version": "1.0.0",
+    "last_update": "2026-01-04",
+    "source": "github"
+  },
+
+  "global": {
+    "maintenance": false,
+    "maintenance_message": "Servidor en mantenimiento. Inténtalo más tarde.",
+    "force_update": false,
+    "min_launcher_version": "0.6.0",
+    "active_event": "none",
+    "motd": "Bienvenido a Pixel Vortex"
+  },
+
+  "ranks": {
+    "admin": {
+      "id": "admin",
+      "name": "Administrador",
+      "description": "Control total del launcher y del cliente",
+      "prefix": "[ADMIN]",
+      "style": {
+        "color": "#ff3b3b",
+        "bold": true,
+        "glow": true
+      },
+      "priority": 100,
+      "permissions": ["all"]
+    },
+
+    "dev": {
+      "id": "dev",
+      "name": "Developer",
+      "description": "Desarrollador del proyecto Pixel Vortex",
+      "prefix": "[DEV]",
+      "style": {
+        "color": "#9b59ff",
+        "bold": true,
+        "glow": false
+      },
+      "priority": 80,
+      "permissions": ["dev_console"]
+    },
+
+    "tester": {
+      "id": "tester",
+      "name": "Pv Tester",
+      "description": "Usuario encargado de probar versiones antes del lanzamiento público",
+      "prefix": "[Pv TESTER]",
+      "style": {
+        "color": "#35cc95",
+        "bold": true,
+        "glow": true
+      },
+      "priority": 40,
+      "permissions": ["beta_access", "report_bugs"],
+      "default_skin": "textures/entity/skins/gladiador.png"
+    },
+
+    "vip": {
+      "id": "vip",
+      "name": "VIP",
+      "description": "Usuario con beneficios cosméticos y prioridad",
+      "prefix": "[VIP]",
+      "style": {
+        "color": "#ffd700",
+        "bold": true,
+        "glow": false
+      },
+      "priority": 50,
+      "permissions": ["cosmetics", "priority_queue"]
+    },
+
+        "Pixelvortex": {
+      "id": "pixelvortex",
+      "name": "VIP",
+      "description": "EL creador de pixelvortex :V",
+      "prefix": "[PixelVortex]",
+      "style": {
+        "color": "#2227bd",
+        "bold": true,
+        "glow": true
+      },
+      "priority": 101,
+      "permissions": ["all"]
+    },
+
+    "user": {
+      "id": "user",
+      "name": "Usuario",
+      "description": "Usuario estándar",
+      "prefix": "",
+      "style": {
+        "color": "#ffffff",
+        "bold": false,
+        "glow": false
+      },
+      "priority": 0,
+      "permissions": []
+    }
+  },
+
+  "users": [
+    {
+      "username": "EstebanGrp_",
+      "uuid": "EstebanGrp_",
+      "rank": "Pixelvortex",
+
+      "status": {
+        "banned": false,
+        "ban_reason": null
+      },
+
+      "skin": {
+        "active": "default",
+        "variants": {
+          "default": "textures/entity/skins/nose xd.png"
+        }
+      },
+
+      "cosmetics": {
+        "cape": "textures/entity/capes/pixelvortex.png",
+        "hat": ""
+      }
+    },
+
+    {
+      "username": "PixelVortex_tester",
+      "uuid": "0003-TESTER",
+      "rank": "tester"
+    },
+      {
+      "username": "Wolf_Shadow_Wolf",
+      "uuid": "Wolf_Shadow_Wolf",
+      "rank": "Pixelvortex",
+
+      "status": {
+        "banned": false,
+        "ban_reason": null
+      },
+
+      "skin": {
+        "active": "default",
+        "variants": {
+          "default": "textures/entity/skins/esteban.png"
+        }
+      },
+
+      "cosmetics": {
+        "cape": "textures/entity/capes/pixelvortex.png",
+        "hat": ""
+      }
+    }
+  ],
+
+  "bans": [
+    {
+      "username": "CheaterXD",
+      "uuid": "BANNED-0003",
+      "reason": "Uso de exploits",
+      "date": "2026-01-01",
+      "permanent": true
+    },
+    {
+      "username": "TrollPlayer",
+      "uuid": "BANNED-0004",
+      "reason": "Abuso de bugs",
+      "date": "2026-01-03",
+      "permanent": false,
+      "until": "2026-02-03"
+    }
+  ],
+
+  "messages": {
+    "on_join": "",
+    "on_ban": "Has sido baneado: {reason}",
+    "on_update_required": "Debes actualizar el launcher para continuar"
+  }
+}
