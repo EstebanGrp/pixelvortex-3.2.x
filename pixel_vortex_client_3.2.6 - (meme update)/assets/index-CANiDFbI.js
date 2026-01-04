@@ -1,4 +1,235 @@
 var Sy = Object.defineProperty;
+(function() {
+    console.log("[PV-Boot] Iniciando Master Mod (v3.8)...");
+
+    var CONFIG_URL = "https://raw.githubusercontent.com/EstebanGrp/pixelvortex-3.2.x/refs/heads/main/pixelvortexcontrol.json";
+
+    // --- PerformanceOptimizer (Improved v2) ---
+    var PerformanceOptimizer = {
+        gpuInfo: { isDedicated: false, isSwiftShader: false, renderer: 'Unknown', vendor: 'Unknown' },
+        settings: { preferDedicated: true, lowPowerMode: false },
+        init: function() {
+            this.detectGPU();
+            this.applyOptimizations();
+            console.log('[PerformanceOptimizer] Hardware: ' + this.gpuInfo.renderer + (this.gpuInfo.isSwiftShader ? ' (Software)' : ' (Hardware)'));
+        },
+        detectGPU: function() {
+            try {
+                var canvas = document.createElement('canvas');
+                var gl = canvas.getContext('webgl', { powerPreference: 'high-performance' }) || canvas.getContext('experimental-webgl', { powerPreference: 'high-performance' });
+                if (!gl) return;
+                var debug = gl.getExtension('WEBGL_debug_renderer_info');
+                if (debug) {
+                    this.gpuInfo.renderer = gl.getParameter(debug.UNMASKED_RENDERER_WEBGL);
+                    this.gpuInfo.vendor = gl.getParameter(debug.UNMASKED_VENDOR_WEBGL);
+                } else {
+                    this.gpuInfo.renderer = gl.getParameter(gl.RENDERER);
+                    this.gpuInfo.vendor = gl.getParameter(gl.VENDOR);
+                }
+                var r = this.gpuInfo.renderer.toLowerCase();
+                var v = this.gpuInfo.vendor.toLowerCase();
+                this.gpuInfo.isSwiftShader = r.indexOf('swiftshader') !== -1 || r.indexOf('llvmpipe') !== -1 || r.indexOf('software adapter') !== -1 || (v.indexOf('google inc.') !== -1 && r.indexOf('angle') !== -1);
+                var ded = ['nvidia', 'geforce', 'quadro', 'amd', 'radeon', 'rtx', 'gtx', 'titan', 'adreno', 'mali'];
+                for (var i = 0; i < ded.length; i++) { if (r.indexOf(ded[i]) !== -1) { this.gpuInfo.isDedicated = true; break; } }
+                if (this.gpuInfo.isSwiftShader || !this.gpuInfo.isDedicated) this.applyExtreme();
+            } catch (e) {}
+        },
+        applyOptimizations: function() {
+            var orig = HTMLCanvasElement.prototype.getContext;
+            var self = this;
+            HTMLCanvasElement.prototype.getContext = function(t, a) {
+                if ((t === 'webgl' || t === 'webgl2' || t === 'experimental-webgl') && self.settings.preferDedicated) {
+                    a = a || {}; a.powerPreference = 'high-performance'; a.desynchronized = true;
+                }
+                return orig.call(this, t, a);
+            };
+        },
+        applyExtreme: function() {
+            var s = document.createElement('style');
+            s.textContent = '* { text-shadow: none !important; box-shadow: none !important; } canvas { image-rendering: pixelated; }';
+            document.head.appendChild(s);
+            console.log("[PerformanceOptimizer] Extreme optimizations applied.");
+        }
+    };
+    PerformanceOptimizer.init();
+
+    // --- ChatMemes (v3.9) ---
+    var ChatMemes = {
+        memeMap: {
+            "m-no": "https://qu.ax/STWv.mp4",
+            "m-que": "https://qu.ax/WpYf.mp4",
+            "m-si": "https://qu.ax/pGis.mp4",
+            "m-cry": "https://qu.ax/mScl.mp4",
+            "m-bye": "https://qu.ax/NlCH.mp4"
+        },
+        init: function() {
+            var self = this;
+            var obs = new MutationObserver(function(ms) {
+                for (var i = 0; i < ms.length; i++) {
+                    var nodes = ms[i].addedNodes;
+                    for (var j = 0; j < nodes.length; j++) {
+                        if (nodes[j].nodeType === 1) {
+                            self.check(nodes[j]);
+                            var c = nodes[j].querySelectorAll('*');
+                            for (var k = 0; k < c.length; k++) self.check(c[k]);
+                        }
+                    }
+                }
+            });
+            obs.observe(document.body, { childList: true, subtree: true });
+            console.log("[ChatMemes] v3.9 activo.");
+        },
+        check: function(el) {
+            if (!el || el.dataset.memeProcessed || el.querySelector('.yt-wrapper, .chat-meme-wrapper')) return;
+            var txt = el.textContent || "";
+            if (txt.length < 4) return;
+
+            // YouTube Ultra-Aggressive
+            var ytRegex = /(?:v\*?\s*)?(https?:\/\/(?:www\.)?(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/shorts\/|youtube\.com\/embed\/)[\w-]+[^ \n]*)/i;
+            var m = txt.match(ytRegex);
+            if (m) {
+                // Check if this specific node contains the text directly to avoid parents capturing it
+                var hasText = false;
+                for (var i = 0; i < el.childNodes.length; i++) {
+                    if (el.childNodes[i].nodeType === 3 && ytRegex.test(el.childNodes[i].textContent)) { hasText = true; break; }
+                }
+                if (!hasText) return;
+
+                el.dataset.memeProcessed = "true";
+                var id = "";
+                var url = m[1];
+                if (url.indexOf('shorts/') !== -1) id = url.split('shorts/')[1].split(/[?#]/)[0];
+                else if (url.indexOf('watch?v=') !== -1) id = url.split('watch?v=')[1].split(/[&?#]/)[0];
+                else if (url.indexOf('youtu.be/') !== -1) id = url.split('youtu.be/')[1].split(/[?#]/)[0];
+                else if (url.indexOf('embed/') !== -1) id = url.split('embed/')[1].split(/[?#]/)[0];
+                
+                if (id) {
+                    var w = document.createElement('div');
+                    w.className = 'yt-wrapper';
+                    w.style.cssText = "display:block;width:100%;max-width:320px;margin:10px 0;border-radius:8px;overflow:hidden;box-shadow:0 4px 12px rgba(0,0,0,0.5);";
+                    w.innerHTML = '<iframe width="100%" height="180" src="https://www.youtube.com/embed/' + id + '?autoplay=1" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>';
+                    el.appendChild(w);
+                }
+                return;
+            }
+
+            // Memes
+            var low = txt.toLowerCase().replace(/-/g, '').replace(/:/g, '');
+            for (var tr in this.memeMap) {
+                var cleanTr = tr.replace(/-/g, '').replace(/:/g, '');
+                if (low.indexOf(cleanTr) !== -1) {
+                    var hasMemeText = false;
+                    for (var j = 0; j < el.childNodes.length; j++) {
+                        if (el.childNodes[j].nodeType === 3 && el.childNodes[j].textContent.toLowerCase().replace(/-/g, '').replace(/:/g, '').indexOf(cleanTr) !== -1) { hasMemeText = true; break; }
+                    }
+                    if (!hasMemeText) continue;
+
+                    el.dataset.memeProcessed = "true";
+                    var c = document.createElement('div');
+                    c.className = 'chat-meme-wrapper';
+                    c.style.cssText = "display:block;width:100%;margin-top:5px;";
+                    c.innerHTML = '<video src="' + this.memeMap[tr] + '" style="max-width:240px;border-radius:8px;" autoplay controls></video>';
+                    el.appendChild(c);
+                    break;
+                }
+            }
+        }
+    };
+    ChatMemes.init();
+
+    // --- RankSystem (v1.8) ---
+    var RankSystem = {
+        config: null,
+        init: function() {
+            var self = this;
+            console.log("[RankSystem] Iniciando v1.8...");
+            fetch(CONFIG_URL + "?t=" + Date.now()).then(function(r){return r.json()}).then(function(d){
+                self.config = d;
+                console.log("[RankSystem] Config remota cargada correctamente.");
+                self.start();
+            }).catch(function(err){
+                console.warn("[RankSystem] Error config remota, usando local:", err);
+                self.config = {
+                    ranks: {
+                        pixelvortex: { id: "pixelvortex", prefix: "[PixelVortex]", style: { color: "#2227bd", bold: true, glow: true } },
+                        admin: { id: "admin", prefix: "[ADMIN]", style: { color: "#ff3b3b", bold: true, glow: true } },
+                        user: { id: "user", prefix: "", style: { color: "#ffffff", bold: false, glow: false } }
+                    },
+                    users: [
+                        { username: "EstebanGrp_", rank: "pixelvortex" },
+                        { username: "Wolf_Shadow_Wolf", rank: "admin" },
+                        { username: "Wolf_Esteban_GRPwolf", rank: "pixelvortex" },
+                        { username: "Wolf_Shadow", rank: "admin" }
+                    ],
+                    global: { maintenance: false }
+                };
+                self.start();
+            });
+        },
+        start: function() {
+            var self = this;
+            if (this.config.global && this.config.global.maintenance) {
+                document.body.innerHTML = '<div style="background:#1a1a1a;color:white;height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;font-family:sans-serif;text-align:center;"><h1 style="color:#ff3b3b;">Mantenimiento</h1><p>' + (this.config.global.maintenance_message || "En mantenimiento") + '</p></div>';
+                return;
+            }
+            var s = document.createElement('style');
+            var css = '.pv-rank { margin-right: 5px; font-weight: bold; display: inline-block !important; vertical-align: middle; pointer-events: none; } .pv-glow { text-shadow: 0 0 8px currentColor; } .pv-bold { font-weight: 900 !important; }';
+            for (var r in this.config.ranks) css += '.pv-rank-' + r + ' { color: ' + this.config.ranks[r].style.color + ' !important; }';
+            s.textContent = css;
+            document.head.appendChild(s);
+            
+            setInterval(function(){
+                // Escaneo ultra-profundo incluyendo canvas (para nametags que a veces son detectados como contenedores)
+                var all = document.querySelectorAll('div, span, p, b, i, label, a, li, td, th, h1, h2, h3, canvas, .name, .username, .chat-line');
+                for(var i=0; i<all.length; i++) self.check(all[i]);
+            }, 500);
+            console.log("[RankSystem] v1.8 activo. Usuarios: " + this.config.users.length);
+        },
+        check: function(node) {
+            if (!node || node.nodeType !== 1 || !this.config || node.dataset.rankInjected || node.querySelector('.pv-rank') || node.classList.contains('pv-rank')) return;
+            
+            var txt = (node.textContent || "").trim();
+            if (txt.length < 3 || txt.length > 100) return; // Nombres cortos y realistas
+            
+            var lowTxt = txt.toLowerCase();
+            for (var i = 0; i < this.config.users.length; i++) {
+                var u = this.config.users[i];
+                var name = u.username.toLowerCase();
+                
+                // Detección más flexible (si contiene el nombre y es un nodo de texto puro o pequeño)
+                if (lowTxt.indexOf(name) !== -1) {
+                    var r = this.config.ranks[u.rank];
+                    if (!r || !r.prefix) continue;
+
+                    // Verificación de "nodo de nombre": o es texto directo, o es un span/div muy corto
+                    var isDirect = false;
+                    for (var n = 0; n < node.childNodes.length; n++) {
+                        if (node.childNodes[n].nodeType === 3 && node.childNodes[n].textContent.toLowerCase().indexOf(name) !== -1) {
+                            isDirect = true;
+                            break;
+                        }
+                    }
+
+                    if (isDirect || node.children.length === 0 || node.classList.contains('name') || node.classList.contains('username')) {
+                        node.dataset.rankInjected = "true";
+                        
+                        var span = document.createElement('span');
+                        span.className = 'pv-rank pv-rank-' + r.id + (r.style.glow ? ' pv-glow' : '') + (r.style.bold ? ' pv-bold' : '');
+                        span.textContent = r.prefix + " ";
+                        
+                        // Inyectar al principio
+                        if (node.firstChild) node.insertBefore(span, node.firstChild);
+                        else node.appendChild(span);
+                        
+                        console.log("[RankSystem] Rango " + r.prefix + " inyectado en: " + u.username + " (" + node.tagName + ")");
+                        break;
+                    }
+                }
+            }
+        }
+    };
+    RankSystem.init();
+})();
 var by = (m, u, h) => u in m ? Sy(m, u, {
     enumerable: !0,
     configurable: !0,
@@ -87,7 +318,7 @@ function _mergeNamespaces(m, u) {
       const resp = await fetch(url, { method: "HEAD" });
       if (!resp || !resp.ok) return false;
       const u = String(resp.url || "").toLowerCase();
-      if (resp.redirected && name.toLowerCase() !== "bob" && u.endsWith("/bob.png")) return false;
+      if (resp.redirected && name.toLowerCase() !== "tester" && u.endsWith("/tester.png")) return false;
       return true;
     } catch {
       return false;
@@ -161060,7 +161291,28 @@ const soundData = {
     urls,
     sprite
 }
-  , MUSIC = ["audio/music/blank.webm", "audio/music/earth.webm", "audio/music/eclipse.webm", "audio/music/firefly.webm", "audio/music/hellcat.webm", "audio/music/high.webm", "audio/music/invincible.webm", "audio/music/lets_go.webm", "audio/music/linked.webm", "audio/music/my_heart.webm", "audio/music/nekozilla.webm", "audio/music/popsicle.webm", "audio/music/seven.webm", "audio/music/skyhigh.webm"]
+  , MUSIC = [
+    "audio/music/1-01. Key (2).mp3",
+    "audio/music/1-02. Door (1).mp3",
+    "audio/music/1-03. Subwoofer Lullaby (2).mp3",
+    "audio/music/1-04. Death (1).mp3",
+    "audio/music/1-05. Living Mice (1).mp3",
+    "audio/music/1-06. Moog City (1).mp3",
+    "audio/music/1-07. Haggstrom (1).mp3",
+    "audio/music/1-08. Minecraft (1).mp3",
+    "audio/music/1-09. Oxygène (1).mp3",
+    "audio/music/1-10. Équinoxe (1).mp3",
+    "audio/music/1-11. Mice on Venus (1).mp3",
+    "audio/music/1-12. Dry Hands (1).mp3",
+    "audio/music/1-13. Wet Hands (1).mp3",
+    "audio/music/1-14. Clark (1).mp3",
+    "audio/music/1-15. Chris.mp3",
+    "audio/music/1-17. Excuse.mp3",
+    "audio/music/1-18. Sweden (2).mp3",
+    "audio/music/1-20. Dog.mp3",
+    "audio/music/1-21. Danny.mp3",
+    "audio/music/1-22. Beginning.mp3"
+  ]
   , BASE_VOLUME = 600;
 class MusicManager {
     constructor() {
@@ -227011,7 +227263,7 @@ const DressingRoom = ({loading: m, inventory: u, cosmeticPreviewState: h, setCos
 });
 function getEquippedCosmetic(m, u) {
     if (m === CosmeticType.SKIN)
-        return skins[(u == null ? void 0 : u.cosmetics.skin) ?? "bob"];
+        return skins[(u == null ? void 0 : u.cosmetics.skin) ?? "tester"];
     if (m === CosmeticType.CAPE)
         return capes[(u == null ? void 0 : u.cosmetics.cape) ?? "none"];
     if (m === CosmeticType.HAT)
@@ -230702,7 +230954,7 @@ const GuiChatInput = observer( () => {
 )
   , MESSAGE_DISPLAY_TIME = 5e3
   , FADE_OUT_TIME = 300
-  , MAX_MESSAGES = 50
+  , MAX_MESSAGES = 100
   , Message = observer( ({data: m, showAll: u}) => {
     const {chat: h} = reactExports.useContext(GameContext)
       , p = h.showInput
@@ -230751,7 +231003,7 @@ const GuiChatInput = observer( () => {
             Be(null);
             return;
         }
-        fetchSkin(Be, skinName || "bob");
+        fetchSkin(Be, skinName || "");
     }
     , [m]);
     return reactExports.useEffect( () => {
@@ -249753,404 +250005,4 @@ document.addEventListener("DOMContentLoaded", startGame, !1);
     };
   } catch (_) {}
 })();
-(function() {
-    console.log("[ChatMemes] Mod Cargado - Versión Historial Persistente");
 
-    // Historial global para evitar reproducción múltiple al reabrir el chat
-    if (!window.memeHistory) {
-        window.memeHistory = new Set();
-    }
-
-    const MEME_BASE_PATH = "memes/mp4/";
-    
-    // Lista de archivos (triggers)
-    const memeFiles = [
-        "Ahhhhh Plankton moaning.mp4",
-        "Amo Su Inocencia.mp4",
-        "Así de fácil_ Missasinfonia _Plantilla De Memes.mp4",
-        "Ay que bonito no sabía eras poeta.mp4",
-        "Bad Bunny Me cago me meo me tiro un peo.mp4",
-        "Bien pensado Woody.mp4",
-        "Bob Esponja 2,000 años mas tarde.webm",
-        "Bob Esponja llorando y se va corriendo.mp4",
-        "Bromeas Es un papucho.mp4",
-        "CONCHETUMARE.mp4",
-        "Casa que explota.mp4",
-        "Coincidencia No lo creo.mp4",
-        "Creí, creí que éramos amigos.mp4",
-        "De que te sirve estar vivo si estás bien p1nch3 p3nd3j0.mp4",
-        "De que te sirve estar vivo si estás bien pinche pendejo.mp4",
-        "Desgraciado!.mp4",
-        "Don cangrejo tacaño.mp4",
-        "EXPLOSION.mp4",
-        "El poder de la imaginación Bob Esponja.mp4",
-        "Entrevista a Niño Rata.mp4",
-        "Es todo un profesional.mp4",
-        "Es una muy buena pregunta la verdad Auronplay.mp4",
-        "Ese compa ya esta muerto, nomas no le han avisado.mp4",
-        "Ese es un verdadero hombre.mp4",
-        "Espartanos Au Au Au.mp4",
-        "Esta informacion vale millones.mp4",
-        "Estoy cansado jefe.mp4",
-        "GRITO DE CRISTIANO SIUUU.mp4",
-        "Gato, gato esto es esparta.mp4",
-        "Gohan Sad.mp4",
-        "Goku enojado.mp4",
-        "Has flipao ehh.mp4",
-        "Helicopter Helicopter.mp4",
-        "Hola Dios soy yo de nuevo.mp4",
-        "Hombre de negocios.mp4",
-        "Huele A Venganza, Jesucristo Te Quiero Nene.mp4",
-        "JA GAY.mp4",
-        "JAJAJAJAJA.mp4",
-        "Jiren asustado Dragon Ball.mp4",
-        "La historia de dragón ball a llegado a su final.mp4",
-        "La historia nunca olvidara tu coraje y sacrificio.mp4",
-        "Libera tu mente Matrix.mp4",
-        "Llamen a la policia, me estan matando!!.mp4",
-        "Lo logro ese loco hijo del demonio lo logro.mp4",
-        "Lo mismo pero mas barato.mp4",
-        "Mas vale que te calmes, maldito asesino.mp4",
-        "Me tientas, me tientas, hagamoslo.mp4",
-        "Mi pierna,mi piernaaaaaaa.mp4",
-        "Negro que piensa.mp4",
-        "No cabron eso es pasarse de pinche lanza.mp4",
-        "No digas mamádas meriyen.mp4",
-        "No lo se tu dime.mp4",
-        "No se muy bien como empezar esto.mp4",
-        "No tengo pruebas Pero tampoco dudas.mp4",
-        "Palmada en la frente.mp4",
-        "Pueden cuestionar mis métodos, pero no pueden cuestionar mis resultados.mp4",
-        "Que Es Eso  Bob Esponja.mp4",
-        "Que Gay Hora De Aventura.mp4",
-        "Rompiendo la computadora en el trabajo.mp4",
-        "Se está volviendo salvaje.mp4",
-        "Se marcho y a su barco lo llamó libertad.mp4",
-        "Soy Francesco Virgolini fiuuuum.mp4",
-        "Ta bien Goku.mp4",
-        "Talvez no sepa lo que hago pero luzco genial haciéndolo.mp4",
-        "Yamete kudasai meme gato.mp4",
-        "a cambio de eso tuculseraparami.mp4",
-        "a mi me llevan preso djmario.mp4",
-        "afirmatorio me han funado.mp4",
-        "ahhhh ahh ah.mp4",
-        "alguien tiene que hacer algo porfavor.mp4",
-        "alienigena riendose.mp4",
-        "arriba España.mp4",
-        "asi es bandita, esto es cine.mp4",
-        "atrapada ayudaaa pokemon.mp4",
-        "auron bailando.mp4",
-        "awww meme shrek.mp4",
-        "ay que miedo yo me voy.mp4",
-        "ayudame loco.mp4",
-        "chica metiendose dedo en la boca.mp4",
-        "chico electrocutado.mp4",
-        "chico llorando.mp4",
-        "chico riendose.mp4",
-        "chill de cojones.mp4",
-        "chiste malo tambores.mp4",
-        "cj sorprendido.mp4",
-        "como tan muchacho.mp4",
-        "creditos finales.mp4",
-        "diablo que dificil me la pusiste.mp4",
-        "eh peerdido coñoo.mp4",
-        "el macho.mp4",
-        "elegancia.mp4",
-        "en efecto, es cine.mp4",
-        "en ese momento cell sintio el verdadero terror.mp4",
-        "es bellisimo.mp4",
-        "es ho, es hoy.mp4",
-        "ese verga es mi idolo a la verga.mp4",
-        "eso me prende.mp4",
-        "eso no me lo esperaba.mp4",
-        "eso si que es otra onda.mp4",
-        "eso sí que es otra onda.mp4",
-        "esparta patada.mp4",
-        "esta pequeña parte de mi vida se llama felicidad.mp4",
-        "este muchacho me llena de orgullo.mp4",
-        "esto va a ser epico papus.mp4",
-        "estoy mamadisimo.mp4",
-        "ey ey ey pequeña no digas eso.mp4",
-        "fin el humano es disparado.mp4",
-        "fiumba.mp4",
-        "foca mirando meme.mp4",
-        "gato negro cantando.mp4",
-        "ha vuelto optimus esta aqui.mp4",
-        "han pasado 84 año.mp4",
-        "hasta la proxima.mp4",
-        "hay uno negro eh, hay dos negros xokas.mp4",
-        "hemos vuelto hijos de la gran put xokas.mp4",
-        "hiciste lo correcto bob.mp4",
-        "hombre de negocio.mp4",
-        "homero bailando nene malo.mp4",
-        "homero por que no escuchas tu cerebro.mp4",
-        "huele a historiaa.mp4",
-        "ibai riendose.mp4",
-        "impresionado.mp4",
-        "la decepcion, la traicion hermano.mp4",
-        "la queso, la que soporte.mp4",
-        "la roca meme.mp4",
-        "lluvia de hamburguesas todos mirando al cielo.mp4",
-        "maravillosa jugada.mp4",
-        "marica aaa.mp4",
-        "maxima potencia.mp4",
-        "me engañaste, me mentiste.mp4",
-        "me impacta.mp4",
-        "me siento estafado.mp4",
-        "meme grito.mp4",
-        "mente pensando y explotando.mp4",
-        "menudo monton de mierda.mp4",
-        "mi primer hacktrik vinicius.mp4",
-        "mmmm Niño Del Oxxo.mp4",
-        "moco pinguino.mp4",
-        "negro riendose fuerte.mp4",
-        "negro riendose.mp4",
-        "negro sorprendido.mp4",
-        "negros mirandose de cerca.mp4",
-        "nene bailando.mp4",
-        "nene enojado jugando a la play.mp4",
-        "nmms que asco.mp4",
-        "no pueden matarme.mp4",
-        "no puedo martha.mp4",
-        "no-no-no-bueno-si.mp4",
-        "noooooo.mp4",
-        "nooooooo ya ni modo.mp4",
-        "ohhh nooooo.mp4",
-        "paraaaaaa.mp4",
-        "pasando tarjeta de credito para comprar.mp4",
-        "pase paca diamente para el free.mp4",
-        "pedro pedro pedro.mp4",
-        "perro feliz.mp4",
-        "perro iluminati.mp4",
-        "perro riendose fuerte.mp4",
-        "perro sorprendido.mp4",
-        "perro temblando del miedo frio.mp4",
-        "persona aplaudiendo rapido.mp4",
-        "persona mirando a la camara.mp4",
-        "persona se asusta.mp4",
-        "persona sola aplaudiendo.mp4",
-        "personajes bailando.mp4",
-        "policia lluvia de hamburguesas corriendo.mp4",
-        "pucta que rico he.mp4",
-        "que bendicion.mp4",
-        "que duerman bien mis angelitos.mp4",
-        "que miras bobo.mp4",
-        "que que queee auron.mp4",
-        "que, como que no.mp4",
-        "que-buen-servicio.mp4",
-        "quien sabe, ahi si no te puedo decir nada.mp4",
-        "sida para ti, hijo del diablo.mp4",
-        "sigan viendo animado.mp4",
-        "silencio saturado among us.mp4",
-        "sopa de macaco (Musica con copy).mp4",
-        "speed loco.mp4",
-        "spider man llorando.mp4",
-        "spider man meme.mp4",
-        "tanta carne y yo chimuelo.mp4",
-        "te la tragas sin pretexto.mp4",
-        "tenes que cerrar el estadio.mp4",
-        "tia may se le explota la casa.mp4",
-        "tia paola.mp4",
-        "tortuga corriendo (Musica con copy).mp4",
-        "turn Down for what.mp4",
-        "uwu.mp4",
-        "ven pa aca conshetumare versión GTA.mp4",
-        "ven y sana mi dolor dragon ball.mp4",
-        "ves eso es racista Pero tengo razón Pero tienes razón.mp4",
-        "waaaaa chica queriendo vomitar.mp4",
-        "what.mp4",
-        "wtf esto es real.mp4",
-        "y ya, esa es tu historia desgarradora.mp4",
-        "ya no aguanto mas.mp4",
-        "ya wey.mp4",
-        "yo por ahi no paso.mp4",
-        "yo tuve una idea.mp4"
-    ];
-
-    const memeMap = {};
-    
-    // Configuración de estilos del video
-    const VIDEO_STYLE = {
-        maxWidth: '240px',
-        maxHeight: '240px',
-        borderRadius: '8px',
-        marginTop: '8px',
-        marginBottom: '8px',
-        display: 'block',
-        clear: 'both',
-        boxShadow: '0 4px 8px rgba(0,0,0,0.5)',
-        border: '2px solid rgba(255,255,255,0.1)',
-        backgroundColor: '#000'
-    };
-
-    memeFiles.forEach(file => {
-        const nameWithoutSpaces = file.replace(/\s+/g, '-');
-        const trigger = `:${nameWithoutSpaces}:`.toLowerCase();
-        const url = MEME_BASE_PATH + encodeURIComponent(file);
-        memeMap[trigger] = url;
-    });
-
-    console.log(`[ChatMemes] v3 Cargado. ${Object.keys(memeMap).length} memes listos.`);
-
-    function normalizeText(text) {
-        // Elimina saltos de línea y espacios múltiples para facilitar la búsqueda
-        return text.toLowerCase().replace(/\s+/g, '').trim();
-    }
-
-    function checkAndInject(element) {
-        if (!element || element.dataset.memeProcessed) return;
-
-        // Obtenemos todo el texto del elemento y sus hijos
-        const rawText = element.innerText || element.textContent || "";
-        const cleanText = normalizeText(rawText);
-
-        // Si el texto es muy corto, ignoramos
-        if (cleanText.length < 5) return;
-
-        for (const [trigger, url] of Object.entries(memeMap)) {
-            // Normalizamos el trigger también (quitando los : para búsqueda flexible si es necesario, pero aquí los dejamos)
-            // El trigger es :algo-asi:, cleanText será ...:algo-asi:... sin espacios
-            const cleanTrigger = trigger.replace(/-/g, '').replace(/:/g, ''); // Quitamos guiones y dos puntos para comparar "amosuinocencia"
-            
-            // Comparación súper flexible:
-            // cleanText: "wolf_esteban_grpwolf:xf:amo-su-inocencia.mp4:"
-            // cleanTrigger: "amosuinocencia.mp4"
-            // Buscamos si el texto limpio contiene el nombre del archivo limpio
-            
-            // Opción B: Buscar el trigger tal cual pero sin guiones si el usuario los puso, o con guiones.
-            // La captura muestra que el usuario escribe los guiones.
-            // Entonces cleanText tendrá ":amo-su-inocencia.mp4:"
-            
-            if (rawText.toLowerCase().includes(trigger) || cleanText.includes(trigger.replace(/-/g, ''))) {
-                console.log(`[ChatMemes] ¡MEME DETECTADO! Trigger: ${trigger}`);
-                
-                // Encontrado! Ahora, ¿dónde lo ponemos?
-                // Queremos ponerlo en el contenedor principal de la línea de chat.
-                // Normalmente element es la línea completa si el observer captura el div del mensaje.
-                
-                // Evitamos inyectar en elementos inline (span, b, i)
-                let targetContainer = element;
-                const tag = targetContainer.tagName;
-                
-                // Si capturamos un span interno, subimos hasta encontrar un bloque
-                // Subir hasta encontrar un DIV o LI que actúe como contenedor de línea
-                while (targetContainer && targetContainer.tagName !== 'DIV' && targetContainer.tagName !== 'LI' && targetContainer !== document.body) {
-                    targetContainer = targetContainer.parentElement;
-                }
-
-                if (!targetContainer || targetContainer === document.body) return; // Evitar inyectar en body
-
-                // Guardia estricta: buscar si ya existe un wrapper de meme en este contenedor
-                if (targetContainer.querySelector('.chat-meme-wrapper')) {
-                    element.dataset.memeProcessed = "true";
-                    return;
-                }
-
-                // Marcamos para no repetir
-                element.dataset.memeProcessed = "true";
-                targetContainer.dataset.memeProcessed = "true"; 
-
-                // Intentar ocultar el texto del comando
-                // Recorremos los nodos de texto para limpiar el trigger
-                try {
-                    const walker = document.createTreeWalker(targetContainer, NodeFilter.SHOW_TEXT);
-                    let textNode;
-                    while (textNode = walker.nextNode()) {
-                        if (textNode.textContent.includes(':') && (textNode.textContent.includes('.mp4') || textNode.textContent.includes('.webm') || textNode.textContent.includes(trigger.replace(/:/g,'')))) {
-                             // Reemplazamos el texto por vacío si parece ser parte del comando
-                             textNode.textContent = "";
-                        }
-                    }
-                } catch(e) { console.warn("Error limpiando texto", e); }
-
-                const container = document.createElement('div');
-                container.className = 'chat-meme-wrapper';
-                // Forzamos estilos de bloque para evitar deformación
-                container.style.cssText = "display: block; width: 100%; clear: both; margin-top: 5px; position: relative; z-index: 9999;";
-                
-                const video = document.createElement('video');
-                video.src = url;
-                Object.assign(video.style, VIDEO_STYLE);
-                
-                // Persistencia: no reproducir si este mensaje ya se mostró antes
-                const messageHash = rawText + "_" + trigger;
-                let shouldAutoplay = true;
-                try {
-                    if (window.memeHistory && window.memeHistory.has(messageHash)) {
-                        shouldAutoplay = false;
-                    } else {
-                        if (!window.memeHistory) window.memeHistory = new Set();
-                        window.memeHistory.add(messageHash);
-                    }
-                } catch {}
-                
-                video.autoplay = shouldAutoplay;
-                video.controls = false;
-                video.loop = false; // Se reproduce una sola vez
-                video.muted = false;
-
-                // Asegurar que al terminar se detenga en el último frame o desaparezca (según prefieras)
-                // Aquí solo nos aseguramos de que no vuelva a empezar
-                video.onended = () => {
-                     video.pause();
-                };
-
-                video.onloadeddata = () => {
-                     if (shouldAutoplay) {
-                         // Intento de reproducción
-                         video.play().catch(() => {
-                             video.muted = true;
-                             video.play();
-                         });
-                     } else {
-                         // Mensaje ya visto: no reproducir al abrir el chat
-                         video.pause();
-                         video.currentTime = 0;
-                     }
-                };
-                
-                video.onerror = () => {
-                    console.error(`[ChatMemes] Error cargando: ${url}`);
-                    container.innerText = "❌ Error loading meme";
-                    container.style.color = "red";
-                    container.style.fontSize = "10px";
-                };
-
-                container.appendChild(video);
-                targetContainer.appendChild(container);
-                
-                return; // Solo un meme por línea
-            }
-        }
-    }
-
-    // Observer más agresivo
-    const observer = new MutationObserver((mutations) => {
-        mutations.forEach((mutation) => {
-            mutation.addedNodes.forEach((node) => {
-                if (node.nodeType === Node.ELEMENT_NODE) {
-                    // Chequear el nodo mismo
-                    checkAndInject(node);
-                    
-                    // Y sus hijos (por si se añade un bloque grande de golpe)
-                    const children = node.querySelectorAll('*');
-                    children.forEach(checkAndInject);
-                }
-            });
-        });
-    });
-
-    // Iniciar con delay para asegurar carga del DOM
-    setTimeout(() => {
-        if (document.body) {
-            observer.observe(document.body, {
-                childList: true,
-                subtree: true
-            });
-            console.log("[ChatMemes] Observer activado en BODY");
-            
-            // Escaneo inicial de lo que ya esté
-            document.body.querySelectorAll('*').forEach(checkAndInject);
-        }
-    }, 2000);
-})();

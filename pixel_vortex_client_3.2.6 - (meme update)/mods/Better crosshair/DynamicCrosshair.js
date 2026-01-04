@@ -12,6 +12,9 @@
 
     const CROSSHAIR_SIZE = 32;
 
+    let cachedCanvas = null;
+    let cachedCtx = null;
+
     function drawCrosshair(ctx, x, y) {
         if (!loaded) return;
         ctx.save();
@@ -25,14 +28,17 @@
             originalRender.apply(this, args);
 
             try {
-                const canvas = document.querySelector('canvas');
-                if (!canvas) return;
-                const ctx = canvas.getContext('2d');
+                if (!cachedCanvas) {
+                    cachedCanvas = document.querySelector('canvas');
+                    if (cachedCanvas) cachedCtx = cachedCanvas.getContext('2d');
+                }
+                
+                if (!cachedCtx) return;
 
-                const x = canvas.width / 2;
-                const y = canvas.height / 2;
+                const x = cachedCanvas.width / 2;
+                const y = cachedCanvas.height / 2;
 
-                drawCrosshair(ctx, x, y);
+                drawCrosshair(cachedCtx, x, y);
             } catch(e) {
                 console.error('Error dibujando DynamicCrosshair:', e);
             }

@@ -78,10 +78,10 @@
     deltaTime: 0,
     accumulatedTime: 0,
     update(){
-      this.previous = this.current;
-      this.current = performance.now() * 1000000; // ns-like
-      if (this.previous <= 0) this.previous = this.current - 1;
-      this.deltaTime = (this.current - this.previous) / 1e9;
+      const now = performance.now();
+      if (this.previous === 0) this.previous = now;
+      this.deltaTime = Math.min((now - this.previous) / 1000, 0.1); // Cap delta time to 100ms
+      this.previous = now;
       this.accumulatedTime += this.deltaTime;
     },
     getTime(){ return this.accumulatedTime; },
@@ -121,6 +121,7 @@
     const instances = new Array(MAX).fill(null);
     let instanceMask = 0n;
     const calculatedOffset = v3();
+    const tempVec = v3();
     function createSlot(){
       return { version:1, trauma:0, startTime:0, lengthInSeconds:0, frequency:1, radius:1, position:v3(), hasPosition(){ return this.lengthInSeconds>0 && this.radius>0; }, setDefaults(){ this.trauma=0; this.startTime=TimeSystem.getTime(); this.lengthInSeconds=0; this.frequency=1; this.radius=1; this.position.set(0,0,0); } };
     }
@@ -153,8 +154,8 @@
         const decay = 1.0 - progress;
         let intensity = MathUtils.clamp(ss.trauma, 0, 1) * decay * decay;
         if (ss.hasPosition()){
-          const sampleStep = position.distanceTo(ss.position);
-          const distanceFactor = 1.0 - Math.min(1.0, sampleStep / ss.radius);
+          const distance = position.distanceTo(ss.position);
+          const distanceFactor = 1.0 - Math.min(1.0, distance / ss.radius);
           intensity *= distanceFactor * distanceFactor;
         }
         if (!(intensity <= 0) && Number.isFinite(intensity)){
@@ -195,6 +196,9 @@
       this.prevStrafingRollOffset = 0;
       this.cameraSwayFactor = 0;
       this.cameraSwayFactorTarget = 1;
+      
+      // Temporary vector for distance calculations
+      this._tempDistVec = v3();
     }
 
     notifyOfPlayerAction(){ this.lastActionTime = TimeSystem.getTime(); }
@@ -202,6 +206,17 @@
     onCameraUpdate(context, deltaTime){
       const time = TimeSystem.getTime();
       this.cfg = this.cfg || defaultConfig();
+      
+      // Detect game mode / player state more reliably
+      const player = window.player || window.localPlayer || window.__player || null;
+      const isSpectator = player && (player.gamemode === 'SPECTATOR' || player.isSpectator);
+      
+      if (isSpectator) {
+        this.offsetTransform.position.set(0,0,0);
+        this.offsetTransform.eulerRot.set(0,0,0);
+        return;
+      }
+
       if (context.isRidingVehicle) this.ctxCfg = this.cfg.vehicles;
       else if (context.isRidingMount) this.ctxCfg = this.cfg.mounts;
       else if (context.isSwimming) this.ctxCfg = this.cfg.swimming;
@@ -213,14 +228,21 @@
 
       if (this.cfg.general.enabled && (this.cfg.general.enableInThirdPerson || context.perspective === 'FIRST_PERSON')) {
         ScreenShakes.onCameraUpdate(context, deltaTime);
-        if (!context.velocity.equals(this.prevEntityVelocity) || !context.transform.eulerRot.equals(this.prevCameraEulerRot)) {
+        
+        // Use squared distance for faster comparison
+        const velocityChanged = this._tempDistVec.copy(context.velocity).sub(this.prevEntityVelocity).lengthSq() > 0.0001;
+        const rotationChanged = this._tempDistVec.copy(context.transform.eulerRot).sub(this.prevCameraEulerRot).lengthSq() > 0.0001;
+
+        if (velocityChanged || rotationChanged) {
           this.notifyOfPlayerAction();
         }
+        
         this.verticalVelocityPitchOffset(context, this.offsetTransform, deltaTime);
         this.forwardVelocityPitchOffset(context, this.offsetTransform, deltaTime);
         this.turningRollOffset(context, this.offsetTransform, deltaTime);
         this.strafingRollOffset(context, this.offsetTransform, deltaTime);
         this.noiseOffset(context, this.offsetTransform, deltaTime);
+        
         this.prevEntityVelocity.copy(context.velocity);
         this.prevCameraEulerRot.copy(context.transform.eulerRot);
         this.prevCameraPerspective = context.perspective;
@@ -304,6 +326,13 @@
     rafId: null,
     inited: false,
 
+    // Pre-allocated objects for reuse
+    _cachedPos: v3(),
+    _cachedRot: v3(),
+    _cachedVelocity: v3(),
+    _cachedForwardRel: v3(),
+    _cachedTransform: new Transform(),
+
     init({ camera, controls, autoInject = true, config } = {}){
       this.camera = camera || window.camera || (window.__MBX && window.__MBX.camera) || null;
       this.controls = controls || window.controls || (window.PointerLockControls && window.PointerLockControls.instance) || null;
@@ -320,17 +349,37 @@
       const self = this;
       if (this.rafId) return;
       function loop(){
+        if (!self.enabled) {
+            self.rafId = requestAnimationFrame(loop);
+            return;
+        }
+
         TimeSystem.update();
         const ctx = self._buildContext();
         const dt = TimeSystem.getDeltaTime();
         self.system.onCameraUpdate(ctx, dt);
-        const t = new Transform(self.camera ? self.camera.position.clone() : v3(), new THREE.Vector3(radToDeg(self.camera.rotation.x||0), radToDeg(self.camera.rotation.y||0), radToDeg(self.camera.rotation.z||0)));
+        
+        // Use pre-allocated objects
+        const t = self._cachedTransform;
+        if (self.camera) {
+            t.position.copy(self.camera.position);
+            t.eulerRot.set(radToDeg(self.camera.rotation.x||0), radToDeg(self.camera.rotation.y||0), radToDeg(self.camera.rotation.z||0));
+        } else {
+            t.position.set(0,0,0);
+            t.eulerRot.set(0,0,0);
+        }
+
         self.system.modifyCameraTransform(t);
+
         if (self.camera){
-          self.camera.rotation.x = degToRad(t.eulerRot.x);
-          self.camera.rotation.y = degToRad(t.eulerRot.y);
-          self.camera.rotation.z = degToRad(t.eulerRot.z);
-          self.camera.position.copy(t.position);
+          // Prevent unnecessary updates if values are almost identical
+          if (Math.abs(self.camera.rotation.x - degToRad(t.eulerRot.x)) > 0.0001) self.camera.rotation.x = degToRad(t.eulerRot.x);
+          if (Math.abs(self.camera.rotation.y - degToRad(t.eulerRot.y)) > 0.0001) self.camera.rotation.y = degToRad(t.eulerRot.y);
+          if (Math.abs(self.camera.rotation.z - degToRad(t.eulerRot.z)) > 0.0001) self.camera.rotation.z = degToRad(t.eulerRot.z);
+          
+          if (self.camera.position.distanceToSquared(t.position) > 0.00001) {
+            self.camera.position.copy(t.position);
+          }
         }
         self.rafId = requestAnimationFrame(loop);
       }
@@ -359,16 +408,18 @@
 
     _buildContext(){
       const cam = this.camera || new THREE.Object3D();
-      const pos = cam.position.clone();
-      const rotDeg = new THREE.Vector3(radToDeg(cam.rotation.x||0), radToDeg(cam.rotation.y||0), radToDeg(cam.rotation.z||0));
-      let velocity = v3(0,0,0);
+      const pos = this._cachedPos.copy(cam.position);
+      const rotDeg = this._cachedRot.set(radToDeg(cam.rotation.x||0), radToDeg(cam.rotation.y||0), radToDeg(cam.rotation.z||0));
+      const velocity = this._cachedVelocity.set(0,0,0);
+      
       try {
         const player = window.player || window.localPlayer || window.__player || null;
         if (player && player.velocity) {
           velocity.set(player.velocity.x || 0, player.velocity.y || 0, player.velocity.z || 0);
-        } else if (window.__lastPlayerPos) {
         }
       } catch(e){}
+
+      const self = this;
       const getForwardRelativeVelocity = function(){
         const yaw = rotDeg.y;
         const deg = 360 - yaw;
@@ -376,8 +427,9 @@
         const s = Math.sin(rad), c = Math.cos(rad);
         const x = c * velocity.x - s * velocity.z;
         const z = s * velocity.x + c * velocity.z;
-        return v3(x, velocity.y, z);
+        return self._cachedForwardRel.set(x, velocity.y, z);
       };
+
       return {
         isSwimming: false, isFlying: false, isSprinting: false, isRiding: false, isRidingMount:false, isRidingVehicle:false,
         velocity, perspective: 'FIRST_PERSON',

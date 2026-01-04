@@ -6,6 +6,7 @@
     }
 
     const MEME_BASE_PATH = "memes/mp4/";
+    const GIF_BASE_PATH = "memes/gif/";
     
     const memeFiles = [
         "Ahhhhh Plankton moaning.mp4",
@@ -210,6 +211,28 @@
         "yo tuve una idea.mp4"
     ];
 
+    const gifFiles = [
+        "1000-yard-stare-cat-meme.gif",
+        "84-years.gif",
+        "aaaah-cat.gif",
+        "beard-bear.gif",
+        "cat-disgusted.gif",
+        "cat-meme-cat.gif",
+        "cat-meme.gif",
+        "chat-pouce.gif",
+        "clappi-clappi-clappi.gif",
+        "devil-cat-evil.gif",
+        "hands-down-meme.gif",
+        "kermit.gif",
+        "lfg-lets-go.gif",
+        "memes2022funny-meme.gif",
+        "question-emoji.gif",
+        "scary-cat.gif",
+        "shocked-shocked-cat.gif",
+        "shrek-rizz-shrek-meme.gif",
+        "ugly-plankton-meme-ugly-plankton.gif"
+    ];
+
     const memeMap = {};
     
     const VIDEO_STYLE = {
@@ -229,132 +252,182 @@
         const nameWithoutSpaces = file.replace(/\s+/g, '-');
         const trigger = `:${nameWithoutSpaces}:`.toLowerCase();
         const url = MEME_BASE_PATH + encodeURIComponent(file);
-        memeMap[trigger] = url;
+        memeMap[trigger] = { url, type: 'video' };
+        
+        // Soporte para .mp4 opcional en el comando
+        const triggerWithExt = `:${nameWithoutSpaces.replace(/\.(mp4|webm)$/i, '')}.mp4:`.toLowerCase();
+        memeMap[triggerWithExt] = { url, type: 'video' };
     });
 
-    console.log(`[ChatMemes] v3 Cargado. ${Object.keys(memeMap).length} memes listos.`);
+    gifFiles.forEach(file => {
+        const nameWithoutSpaces = file.replace(/\s+/g, '-');
+        const trigger = `:${nameWithoutSpaces}:`.toLowerCase();
+        const url = GIF_BASE_PATH + encodeURIComponent(file);
+        memeMap[trigger] = { url, type: 'gif' };
+
+        // Soporte para .gif opcional en el comando
+        const triggerWithExt = `:${nameWithoutSpaces.replace(/\.gif$/i, '')}.gif:`.toLowerCase();
+        memeMap[triggerWithExt] = { url, type: 'gif' };
+    });
+
+    // --- OPTIMIZACIÓN EXTREMA ---
+    function distributedInitialScan() {
+        var allDivs = document.querySelectorAll('div, span, li');
+        for (var i = 0; i < allDivs.length; i++) {
+            checkAndInject(allDivs[i]);
+        }
+    }
+
+    console.log("[ChatMemes] v3.2 (Lite) Cargado.");
 
     function normalizeText(text) {
         return text.toLowerCase().replace(/\s+/g, '').trim();
     }
 
+
+    function injectYouTube(element, videoId, rawText) {
+        let targetContainer = element;
+        // Solo buscamos contenedores lógicos de mensajes
+        while (targetContainer && 
+               targetContainer.tagName !== 'DIV' && 
+               targetContainer.tagName !== 'LI' && 
+               targetContainer !== document.body) {
+            targetContainer = targetContainer.parentElement;
+        }
+
+        if (!targetContainer || targetContainer === document.body) targetContainer = element;
+
+        element.dataset.memeProcessed = "true";
+        targetContainer.dataset.memeProcessed = "true";
+
+        // Limpiar texto de forma simple
+        try {
+            targetContainer.textContent = ""; 
+        } catch(e) {}
+
+        const container = document.createElement('div');
+        container.className = 'chat-meme-wrapper youtube-embed';
+        container.style.cssText = "display: block; width: 240px; height: 135px; clear: both; margin: 5px 0; border-radius: 8px; overflow: hidden; border: 2px solid #ff0000; background: #000;";
+
+        const iframe = document.createElement('iframe');
+        iframe.src = `https://www.youtube.com/embed/${videoId}?modestbranding=1&rel=0`;
+        iframe.style.cssText = "width: 100%; height: 100%; border: none;";
+        iframe.allow = "accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture";
+        
+        container.appendChild(iframe);
+        targetContainer.appendChild(container);
+    }
+
     function checkAndInject(element) {
-        if (!element || element.dataset.memeProcessed) return;
+        if (!element || element.nodeType !== 1 || element.dataset.memeProcessed) return;
 
-        const rawText = element.innerText || element.textContent || "";
+        var tag = element.tagName;
+        if (tag === 'SCRIPT' || tag === 'STYLE' || tag === 'CANVAS' || tag === 'VIDEO') return;
+
+        var rawText = element.textContent || "";
+        if (rawText.length < 5) return;
+
+        // Regex ultra-agresiva: detecta v* URL, v URL y URLs directas (con o sin espacios)
+        var ytUrlRegex = /(?:v\*?\s*)?(https?:\/\/(?:www\.)?(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/shorts\/)[\w-]+)/i;
+        var ytMatch = rawText.match(ytUrlRegex);
+
+        if (ytMatch) {
+            var ytUrl = ytMatch[1];
+            var videoId = "";
+            if (ytUrl.indexOf('shorts/') !== -1) videoId = ytUrl.split('shorts/')[1].split(/[?#]/)[0];
+            else if (ytUrl.indexOf('watch?v=') !== -1) videoId = ytUrl.split('watch?v=')[1].split(/[&?#]/)[0];
+            else if (ytUrl.indexOf('youtu.be/') !== -1) videoId = ytUrl.split('youtu.be/')[1].split(/[?#]/)[0];
+
+            if (videoId) {
+                console.log("[ChatMemes] YouTube Detectado ID:", videoId);
+                injectYouTube(element, videoId, rawText);
+                return;
+            }
+        }
+
+
+
         const cleanText = normalizeText(rawText);
-
-        if (cleanText.length < 5) return;
-
-        for (const [trigger, url] of Object.entries(memeMap)) {
-            const cleanTrigger = trigger.replace(/-/g, '').replace(/:/g, '');
-
-            if (rawText.toLowerCase().includes(trigger) || cleanText.includes(trigger.replace(/-/g, ''))) {
-                console.log(`[ChatMemes] ¡MEME DETECTADO! Trigger: ${trigger}`);
-
-                let targetContainer = element;
-                const tag = targetContainer.tagName;
-                
-                while (targetContainer && targetContainer.tagName !== 'DIV' && targetContainer.tagName !== 'LI' && targetContainer !== document.body) {
-                    targetContainer = targetContainer.parentElement;
-                }
-
-                if (!targetContainer || targetContainer === document.body) return; // Evitar inyectar en body
-
-                if (targetContainer.querySelector('.chat-meme-wrapper')) {
-                    element.dataset.memeProcessed = "true";
-                    return;
-                }
-
-                const messageHash = rawText + "_" + trigger;
-                
-                let shouldAutoplay = true;
-                if (window.memeHistory.has(messageHash)) {
-                    console.log("[ChatMemes] Mensaje ya visto, desactivando autoplay.");
-                    shouldAutoplay = false;
-                } else {
-                    window.memeHistory.add(messageHash);
-                }
-
-                element.dataset.memeProcessed = "true";
-                targetContainer.dataset.memeProcessed = "true"; 
-
-                try {
-                    const walker = document.createTreeWalker(targetContainer, NodeFilter.SHOW_TEXT);
-                    let textNode;
-                    while (textNode = walker.nextNode()) {
-                        if (textNode.textContent.includes(':') && (textNode.textContent.includes('.mp4') || textNode.textContent.includes('.webm') || textNode.textContent.includes(trigger.replace(/:/g,'')))) {
-                             textNode.textContent = "";
-                        }
-                    }
-                } catch(e) { console.warn("Error limpiando texto", e); }
-
-                const container = document.createElement('div');
-                container.className = 'chat-meme-wrapper';
-                container.style.cssText = "display: block; width: 100%; clear: both; margin-top: 5px; position: relative; z-index: 9999;";
-                
-                const video = document.createElement('video');
-                video.src = url;
-                Object.assign(video.style, VIDEO_STYLE);
-                
-                video.autoplay = shouldAutoplay; // Solo reproduce si es la primera vez
-                video.controls = false;
-                video.loop = false; // Se reproduce una sola vez
-                video.muted = false;
-
-                
-                video.onended = () => {
-                     video.pause();
-                };
-
-                video.onloadeddata = () => {
-                     if (shouldAutoplay) {
-                         video.play().catch(() => {
-                             video.muted = true;
-                             video.play();
-                         });
-                     } else {
-                        video.pause();
-                        video.currentTime = 0;
-                     }
-                };
-                
-                video.onerror = () => {
-                    console.error(`[ChatMemes] Error cargando: ${url}`);
-                    container.innerText = "❌ Error loading meme";
-                    container.style.color = "red";
-                    container.style.fontSize = "10px";
-                };
-
-                container.appendChild(video);
-                targetContainer.appendChild(container);
-                
-                return; 
+        for (const [trigger, data] of Object.entries(memeMap)) {
+            if (rawText.toLowerCase().includes(trigger) || cleanText.includes(trigger.replace(/:/g, '').replace(/-/g, ''))) {
+                processMeme(element, trigger, data, rawText);
+                return;
             }
         }
     }
 
-    const observer = new MutationObserver((mutations) => {
-        mutations.forEach((mutation) => {
-            mutation.addedNodes.forEach((node) => {
-                if (node.nodeType === Node.ELEMENT_NODE) {
+    function processMeme(element, trigger, data, rawText) {
+        let targetContainer = element;
+        while (targetContainer && targetContainer.tagName !== 'DIV' && targetContainer.tagName !== 'LI' && targetContainer !== document.body) {
+            targetContainer = targetContainer.parentElement;
+        }
+        if (!targetContainer || targetContainer === document.body) return;
+
+        if (targetContainer.querySelector('.chat-meme-wrapper')) {
+            element.dataset.memeProcessed = "true";
+            return;
+        }
+
+        const messageHash = rawText + "_" + trigger;
+        let shouldAutoplay = !window.memeHistory.has(messageHash);
+        if (shouldAutoplay) window.memeHistory.add(messageHash);
+
+        element.dataset.memeProcessed = "true";
+        targetContainer.dataset.memeProcessed = "true";
+
+        // Limpiar texto
+        targetContainer.textContent = "";
+
+        const container = document.createElement('div');
+        container.className = 'chat-meme-wrapper';
+        container.style.cssText = "display: block; width: 100%; clear: both; margin-top: 5px;";
+        
+        const { url, type } = data;
+        if (type === 'video') {
+            const video = document.createElement('video');
+            video.src = url;
+            Object.assign(video.style, VIDEO_STYLE);
+            video.autoplay = shouldAutoplay;
+            video.muted = false;
+            video.controls = false;
+            container.appendChild(video);
+        } else {
+            const img = document.createElement('img');
+            img.src = url;
+            Object.assign(img.style, VIDEO_STYLE);
+            container.appendChild(img);
+        }
+        targetContainer.appendChild(container);
+    }
+
+    var observer = new MutationObserver(function(mutations) {
+        for (var i = 0; i < mutations.length; i++) {
+            var mutation = mutations[i];
+            for (var j = 0; j < mutation.addedNodes.length; j++) {
+                var node = mutation.addedNodes[j];
+                if (node.nodeType === 1) {
                     checkAndInject(node);
-                    const children = node.querySelectorAll('*');
-                    children.forEach(checkAndInject);
+                    var children = node.querySelectorAll('*');
+                    for (var k = 0; k < children.length; k++) {
+                        checkAndInject(children[k]);
+                    }
                 }
-            });
-        });
+            }
+        }
     });
 
-    setTimeout(() => {
+    setTimeout(function() {
         if (document.body) {
             observer.observe(document.body, {
                 childList: true,
                 subtree: true
             });
-            console.log("[ChatMemes] Observer activado en BODY");
-            document.body.querySelectorAll('*').forEach(checkAndInject);
+            console.log("[ChatMemes] Observer activado");
+            distributedInitialScan();
         }
     }, 2000);
 
 })();
+
+
+
