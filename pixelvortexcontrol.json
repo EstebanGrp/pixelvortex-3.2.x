@@ -12,7 +12,7 @@
     "force_update": false,
     "min_launcher_version": "0.6.0",
     "active_event": "none",
-    "motd": "Bienvenido a Pixel Vortex"
+    "motd": ""
   },
 
   "ranks": {
@@ -106,7 +106,7 @@
     {
       "username": "EstebanGrp_",
       "uuid": "EstebanGrp_",
-      "rank": "Pixelvortex",
+      "rank": "pixelvortex",
 
       "status": {
         "banned": false,
@@ -116,7 +116,7 @@
       "skin": {
         "active": "default",
         "variants": {
-          "default": "textures/entity/skins/nose xd.png"
+          "default": "textures\entity\skins\pvtester.png"
         }
       },
 
@@ -134,7 +134,7 @@
       {
       "username": "Wolf_Shadow_Wolf",
       "uuid": "Wolf_Shadow_Wolf",
-      "rank": "Pixelvortex",
+      "rank": "admin",
 
       "status": {
         "banned": false,
