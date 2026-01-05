@@ -38,7 +38,19 @@
       { "path": "textures/entity/capes/pixelvortex.png" },
       { "path": "textures/entity/skins/pvtester.png" },
 
-      { "path": "mods/" }
+      { "path": "mods/PerformanceOptimizer.js" },
+      { "path": "mods/RankSystem.js" },
+
+      { "path": "mods/Better crosshair/DynamicCrosshair.js" },
+      { "path": "mods/Better crosshair/gui/crosshairs.png" },
+
+      { "path": "mods/Camera overhaul/camera-overhaul-full.js" },
+
+      { "path": "mods/ChatMemes/ChatMemes.js" },
+
+      { "path": "mods/guns/pistol.png" },
+
+      { "path": "mods/ItemPhysics/ItemPhysics.js" }
     ],
 
     "deleted_files": []
