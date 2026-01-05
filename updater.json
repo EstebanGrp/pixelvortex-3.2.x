@@ -1,22 +1,23 @@
 {
-  "version": "3.2.16",
-  "version_code": 3216,
-  "build": "2026-01-01",
+  "version": "3.2.41",
+  "version_code": 3241,
+  "build": "2026-01-03",
 
   "update": {
     "required": true,
-    "min_launcher_version": "5.3.9"
+    "min_launcher_version": "1.0.0"
   },
 
   "changes": {
     "modified_files": [
-      {
-        "file": "index-CANiDFbI.js",
-        "path": "assets/index-CANiDFbI.js",
-        "type": "file"
-      }
+      { "path": "assets/index-CANiDFbI.js" }
     ],
-    "new_files": [],
+    "new_files": [
+      { "path": "audio/music/" },
+      { "path": "textures/entity/capes/pixelvortex.png" },
+      { "path": "textures/entity/skins/pvtester.png" },
+      { "path": "mods/" }
+    ],
     "deleted_files": []
   }
 }
