@@ -104,7 +104,7 @@
 
   "users": [
     {
-      "username": "Wolf_EstebanGRP_Wolf",
+      "username": "Wolf_Esteban_GRPWolf",
       "uuid": "Wolf_EstebanGRP_Wolf",
       "rank": "dev",
 
@@ -116,7 +116,7 @@
       "skin": {
         "active": "default",
         "variants": {
-          "default": "textures\entity\skins\pvtester.png"
+          "default": "textures/entity/skins/pvtester.png"
         }
       },
 
