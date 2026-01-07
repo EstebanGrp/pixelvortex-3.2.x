@@ -102,6 +102,21 @@
     }
   },
 
+    "ranks": {
+    "admin": {
+      "id": "helper",
+      "name": "helper",
+      "description": "",
+      "prefix": "[HELPER]",
+      "style": {
+        "color": "#c7f0e1",
+        "bold": true,
+        "glow": true
+      },
+      "priority": 100,
+      "permissions": ["all"]
+    },
+
   "users": [
     {
       "username": "Wolf_Esteban_GRPWolf",
