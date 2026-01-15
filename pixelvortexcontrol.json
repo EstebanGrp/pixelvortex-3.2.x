@@ -73,13 +73,27 @@
       "permissions": ["cosmetics", "priority_queue"]
     },
 
-        "Pixelvortex": {
-      "id": "pixelvortex",
+    "vip": {
+      "id": "vip",
       "name": "VIP",
-      "description": "EL creador de pixelvortex :V",
-      "prefix": "[PixelVortex]",
+      "description": "Usuario con beneficios cosméticos y prioridad",
+      "prefix": "[VIP]",
       "style": {
-        "color": "#2227bd",
+        "color": "#ffd700",
+        "bold": true,
+        "glow": false
+      },
+      "priority": 50,
+      "permissions": ["cosmetics", "priority_queue"]
+    },
+
+    "wolf": {
+      "id": "wolf",
+      "name": "wolf",
+      "description": "rango de clan",
+      "prefix": "[WOLF]",
+      "style": {
+        "color": "#a1a1a1",
         "bold": true,
         "glow": true
       },
@@ -121,7 +135,7 @@
     {
       "username": "Wolf_Esteban_GRPWolf",
       "uuid": "Wolf_EstebanGRP_Wolf",
-      "rank": "dev",
+      "rank": "wolf",
 
       "status": {
         "banned": false,
