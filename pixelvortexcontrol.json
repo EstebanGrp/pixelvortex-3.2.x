@@ -30,6 +30,20 @@
       "permissions": ["all"]
     },
 
+    "helper": {
+      "id": "helper",
+      "name": "Helper",
+      "description": "Soporte y ayuda a la comunidad",
+      "prefix": "[HELPER]",
+      "style": {
+        "color": "#c7f0e1",
+        "bold": true,
+        "glow": true
+      },
+      "priority": 90,
+      "permissions": ["moderate_chat", "support_users"]
+    },
+
     "dev": {
       "id": "dev",
       "name": "Developer",
@@ -42,6 +56,20 @@
       },
       "priority": 80,
       "permissions": ["dev_console"]
+    },
+
+    "vip": {
+      "id": "vip",
+      "name": "VIP",
+      "description": "Usuario con beneficios cosméticos y prioridad",
+      "prefix": "[VIP]",
+      "style": {
+        "color": "#ffd700",
+        "bold": true,
+        "glow": false
+      },
+      "priority": 50,
+      "permissions": ["cosmetics", "priority_queue"]
     },
 
     "tester": {
@@ -59,38 +87,10 @@
       "default_skin": "textures/entity/skins/gladiador.png"
     },
 
-    "vip": {
-      "id": "vip",
-      "name": "VIP",
-      "description": "Usuario con beneficios cosméticos y prioridad",
-      "prefix": "[VIP]",
-      "style": {
-        "color": "#ffd700",
-        "bold": true,
-        "glow": false
-      },
-      "priority": 50,
-      "permissions": ["cosmetics", "priority_queue"]
-    },
-
-    "vip": {
-      "id": "vip",
-      "name": "VIP",
-      "description": "Usuario con beneficios cosméticos y prioridad",
-      "prefix": "[VIP]",
-      "style": {
-        "color": "#ffd700",
-        "bold": true,
-        "glow": false
-      },
-      "priority": 50,
-      "permissions": ["cosmetics", "priority_queue"]
-    },
-
     "wolf": {
       "id": "wolf",
-      "name": "wolf",
-      "description": "rango de clan",
+      "name": "Wolf",
+      "description": "Rango de clan",
       "prefix": "[WOLF]",
       "style": {
         "color": "#a1a1a1",
@@ -116,67 +116,45 @@
     }
   },
 
-    "ranks": {
-    "admin": {
-      "id": "helper",
-      "name": "helper",
-      "description": "",
-      "prefix": "[HELPER]",
-      "style": {
-        "color": "#c7f0e1",
-        "bold": true,
-        "glow": true
-      },
-      "priority": 100,
-      "permissions": ["all"]
-    },
-
   "users": [
     {
       "username": "Wolf_Esteban_GRPWolf",
       "uuid": "Wolf_EstebanGRP_Wolf",
       "rank": "wolf",
-
       "status": {
         "banned": false,
         "ban_reason": null
       },
-
       "skin": {
         "active": "default",
         "variants": {
           "default": "textures/entity/skins/pvtester.png"
         }
       },
-
       "cosmetics": {
         "cape": "textures/entity/capes/pixelvortex.png",
         "hat": ""
       }
     },
-
     {
       "username": "PixelVortex_tester",
       "uuid": "0003-TESTER",
       "rank": "tester"
     },
-      {
+    {
       "username": "Wolf_Shadow_Wolf",
       "uuid": "Wolf_Shadow_Wolf",
       "rank": "admin",
-
       "status": {
         "banned": false,
         "ban_reason": null
       },
-
       "skin": {
         "active": "default",
         "variants": {
           "default": "textures/entity/skins/esteban.png"
         }
       },
-
       "cosmetics": {
         "cape": "textures/entity/capes/pixelvortex.png",
         "hat": ""
