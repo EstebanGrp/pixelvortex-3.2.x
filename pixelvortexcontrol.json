@@ -142,7 +142,7 @@
       "rank": "tester"
     },
     {
-      "username": "Wolf_Shadow_Wolf",
+      "username": "SilentWolf",
       "uuid": "Wolf_Shadow_Wolf",
       "rank": "admin",
       "status": {
@@ -152,7 +152,7 @@
       "skin": {
         "active": "default",
         "variants": {
-          "default": "textures/entity/skins/esteban.png"
+          "default": "textures/entity/skins/"
         }
       },
       "cosmetics": {
